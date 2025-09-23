@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: badminton-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "0913@Tohuudanh*"
+      POSTGRES_DB: badminton_shop
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  server:
+    build: ./server
+    container_name: badminton-server
+    ports:
+      - "5050:5050"
+    env_file:
+      - ./server/.env
+    restart: always
+    depends_on:
+      - postgres
+    volumes:
+      - ./server:/app
+    command: npm start
+
+  client:
+    build: ./client
+    container_name: badminton-client
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+
+volumes:
+  pgdata:
