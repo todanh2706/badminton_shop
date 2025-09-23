@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import useAuthContext from "../context/useAuthContext";
 import { useNavigate } from "react-router-dom";
+import useAuthApi from "../hooks/authApi";
 
 export default function Sign_in() {
-    const { login } = useAuthContext();
+    const { login } = useAuthApi();
     const [emailInput, setEmailInput] = useState("");
     const [password, setPassword] = useState("");
     const [remember, setRemember] = useState(false);
@@ -64,10 +64,10 @@ export default function Sign_in() {
             //     throw new Error(body.message || "Sign in failed!");
             // }
 
-            const user = await login(emailInput, password, remember);
+            await login(emailInput, password, remember);
 
             // const data = await res.json();
-            console.log("Signed in: ", user.email);
+            // console.log("Signed in: ", user.email);
             navigate("/");
         } catch (err) {
             setError(err.message);

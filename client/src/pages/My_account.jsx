@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import useUserApi from "../hooks/userApi";
+import ChangeEmailBar from "../components/ChangeEmailBar";
+import ChangePhoneBar from "../components/ChangePhoneBar";
 import useAuthContext from "../context/useAuthContext";
 
 export default function My_account() {
-    const { getUser } = useAuthContext();
-    const [user, setUser] = useState(null);
+    const { getUser } = useUserApi();
+    const { user } = useAuthContext();
 
     useEffect(() => {
         async function fetchUser() {
             try {
-                const u = await getUser();
-                setUser(u);
+                await getUser();
             } catch (err) {
                 console.error(err);
             }
@@ -22,8 +24,8 @@ export default function My_account() {
     return (
         <div>
             <h1>Welcome {user.email}</h1>
-            <p>Check: your email is {user.email}</p>
-            <p>Check: your phone number is {user.phone}</p>
+            <ChangeEmailBar />
+            <ChangePhoneBar />
         </div>
     );
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Menu, X, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import UserButton from "./UserButton";
+import LogoutButton from "./LogoutButton";
 import useAuthContext from "../context/useAuthContext";
 
 export default function Header_navigation() {
@@ -25,7 +26,12 @@ export default function Header_navigation() {
             <div className="bg-gray-100 text-sm text-gray-600">
                 <div className="max-w-7xl mx-auto px-4 flex justify-between items-center py-2">
                     <div className="flex gap-4">
-                        {accessToken ? <UserButton /> : <button className="hover:text-black" onClick={() => navigate("/signin")}>Sign In</button>}
+                        {accessToken ? (
+                            <>
+                                <UserButton />
+                                <LogoutButton />
+                            </>
+                        ) : <button className="hover:text-black" onClick={() => navigate("/signin")}>Sign In</button>}
                         <button className="hover:text-black flex items-center gap-1">
                             <Search size={16} /> Search
                         </button>

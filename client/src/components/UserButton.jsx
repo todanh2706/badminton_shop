@@ -12,7 +12,7 @@ export default function UserButton() {
     return (
         <button
             onClick={handleClick}
-            className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 hover:bg-blue-500 hover:text-white transition-all duration-300 transform hover:scale-110 shadow-md"
+            className="hover:text-black flex items-center gap-1"
         >
             <User className="w-6 h-6" />
         </button>
