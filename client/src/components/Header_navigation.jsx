@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import UserButton from "./UserButton";
 import LogoutButton from "./LogoutButton";
 import useAuthContext from "../context/useAuthContext";
+import { useTranslation } from "react-i18next";
 
 export default function Header_navigation() {
     const [isOpen, setIsOpen] = useState(false);
     const { accessToken } = useAuthContext();
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
 
     const navLinks = [
         { name: "Accessories", href: "/accessories" },
@@ -31,9 +33,24 @@ export default function Header_navigation() {
                                 <UserButton />
                                 <LogoutButton />
                             </>
-                        ) : <button className="hover:text-black" onClick={() => navigate("/signin")}>Sign In</button>}
+                        ) : <button className="hover:text-black" onClick={() => navigate("/signin")}>{t("SignIn")}</button>}
                         <button className="hover:text-black flex items-center gap-1">
-                            <Search size={16} /> Search
+                            <Search size={16} /> {t("Search")}
+                        </button>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => i18n.changeLanguage("en")}
+                            className={`px-2 py-1 rounded ${i18n.language === "en" ? "bg-green-500 text-white" : "hover:bg-gray-200"}`}
+                        >
+                            EN
+                        </button>
+                        <button
+                            onClick={() => i18n.changeLanguage("vi")}
+                            className={`px-2 py-1 rounded ${i18n.language === "vi" ? "bg-green-500 text-white" : "hover:bg-gray-200"}`}
+                        >
+                            VI
                         </button>
                     </div>
                 </div>
@@ -55,7 +72,7 @@ export default function Header_navigation() {
                                     href={link.href}
                                     className="hover:text-green-600 transition-colors"
                                 >
-                                    {link.name}
+                                    {t(link.name)}
                                 </a>
                             </li>
                         ))}
@@ -81,7 +98,7 @@ export default function Header_navigation() {
                                         className="block hover:text-green-600"
                                         onClick={() => setIsOpen(false)}
                                     >
-                                        {link.name}
+                                        {t(link.name)}
                                     </a>
                                 </li>
                             ))}

@@ -7,6 +7,7 @@ export default function AuthProvider({ children }) {
     const [accessToken, setAccessToken] = useState(null);
     const refreshing = useRef(false);
     const [expiresAt, setExpiresAt] = useState(null);
+    const [loading, setLoading] = useState(true);
 
 
     // Axios instance with cookies enabled
@@ -90,12 +91,14 @@ export default function AuthProvider({ children }) {
                 setUser(null);
                 setAccessToken(null);
                 setExpiresAt(null);
+            } finally {
+                setLoading(false);
             }
         }
         initAuth();
     }, []);
 
-    const value = { user, setUser, accessToken, setAccessToken, api };
+    const value = { user, setUser, accessToken, setAccessToken, api, loading };
 
     return (
         <AuthContext.Provider value={value}>
