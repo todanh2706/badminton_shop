@@ -1,11 +1,13 @@
-import Header_navigation from "../components/Header_navigation";
+import HeaderNavigation from "../components/HeaderNavigation";
+import HeaderSlider from "../components/HeaderSlider";
 import Navbar from "../components/NavbarTest";
 
 export default function Home() {
     return (
         <>
-            <Header_navigation />
+            <HeaderNavigation />
             {/* <Navbar /> */}
+            <HeaderSlider />
         </>
     );
 }

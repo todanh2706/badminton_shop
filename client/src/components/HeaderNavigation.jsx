@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Menu, X, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { motion as Motion } from "framer-motion";
 import UserButton from "./UserButton";
 import LogoutButton from "./LogoutButton";
 import useAuthContext from "../context/useAuthContext";
-import { useTranslation } from "react-i18next";
 
-export default function Header_navigation() {
+export default function HeaderNavigation() {
     const [isOpen, setIsOpen] = useState(false);
+    const [active, setActive] = useState("");
     const { accessToken } = useAuthContext();
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
@@ -21,6 +23,12 @@ export default function Header_navigation() {
         { name: "Shuttlecocks", href: "/shuttle_cocks" },
         { name: "Strings", href: "/strings" },
     ];
+
+    const handleNavigate = (link) => {
+        setActive(link.name);
+        setIsOpen(false);
+        navigate(link.href);
+    }
 
     return (
         <header className="w-full shadow-md">
@@ -56,24 +64,34 @@ export default function Header_navigation() {
                 </div>
             </div>
 
-            {/* Main navbar */}
-            <nav className="bg-white">
+            {/* Main menu */}
+            <nav className="w-full bg-gradient-to-r from-blue-500 via-black-500 to-green-500 p-4 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 flex justify-between items-center py-3">
                     {/* Logo */}
                     <a href="/" className="text-2xl font-bold tracking-wide">
-                        YonexShop
+                        <img src="./yonex_logo.svg" width="100" />
                     </a>
 
                     {/* Desktop menu */}
-                    <ul className="hidden md:flex gap-8 font-semibold text-gray-700">
-                        {navLinks.map((link) => (
-                            <li key={link.name}>
-                                <a
-                                    href={link.href}
-                                    className="hover:text-green-600 transition-colors"
+                    <ul className="hidden md:flex justify-center space-x-8 relative">
+                        {navLinks.map((item) => (
+                            <li key={item.name} className="relative">
+                                <button
+                                    onClick={() => {
+                                        setActive(item.name);
+                                        handleNavigate(item);
+                                    }}
+                                    className={`relative px-4 py-2 text-lg font-semibold transition-colors duration-300 ${active === item.name ? "text-white" : "text-gray-200 hover:text-yellow-300"}`}
                                 >
-                                    {t(link.name)}
-                                </a>
+                                    {t(item.name)}
+                                    {active === item.name && (
+                                        <Motion.div
+                                            layoutId="underline"
+                                            className="absolute left-0 right-0 -bottom-1 h-1 rounded-full bg-yellow-300"
+                                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                                        />
+                                    )}
+                                </button>
                             </li>
                         ))}
                     </ul>
@@ -89,17 +107,19 @@ export default function Header_navigation() {
 
                 {/* Mobile menu dropdown */}
                 {isOpen && (
-                    <div className="md:hidden bg-white border-t">
-                        <ul className="flex flex-col gap-4 px-4 py-4 font-medium">
+                    <div className="md:hidden bg-white border-t shadow-lg">
+                        <ul className="flex flex-col gap-2 px-4 py-4 font-medium">
                             {navLinks.map((link) => (
                                 <li key={link.name}>
-                                    <a
-                                        href={link.href}
-                                        className="block hover:text-green-600"
-                                        onClick={() => setIsOpen(false)}
+                                    <button
+                                        onClick={() => handleNavigate(link)}
+                                        className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${active === link.name
+                                            ? "bg-gray-200 text-black"
+                                            : "hover:bg-gray-100 text-gray-700"
+                                            }`}
                                     >
                                         {t(link.name)}
-                                    </a>
+                                    </button>
                                 </li>
                             ))}
                         </ul>

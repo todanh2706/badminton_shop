@@ -5,6 +5,8 @@ import Sign_up from "./pages/Sign_up";
 import VerifyOtp from "./pages/Verify_otp";
 import My_account from "./pages/My_account";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Accessories from "./pages/Accessories";
+import Racquets from "./pages/Racquets";
 
 
 export default function App() {
@@ -15,6 +17,8 @@ export default function App() {
       <Route path="/signup" element={<Sign_up />} />
       <Route path="/verify" element={<VerifyOtp />} />
       <Route path="/myaccount" element={<ProtectedRoute><My_account /></ProtectedRoute>} />
+      <Route path="/accessories" element={<Accessories />} />
+      <Route path="/racquets" element={<Racquets />} />
     </Routes>
   );
 }

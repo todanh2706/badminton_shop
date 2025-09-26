@@ -2,6 +2,7 @@ import express from "express";
 import sequelize from "./config/database.js";
 import authRoutes from "./routes/auth.js";
 import userDataRoutes from "./routes/userdata.js";
+import productDataRoutes from "./routes/productdata.js";
 import cors from "cors";
 import session from "express-session";
 import passport from "./config/passport.js";
@@ -32,6 +33,7 @@ app.use(passport.session());
 // Routes
 app.use("/api/auth", authRoutes); // Sign in, sign up
 app.use("/api/userdata", userDataRoutes);
+app.use("/api/productdata", productDataRoutes);
 
 // Sync database
 sequelize.sync().then(() => {
