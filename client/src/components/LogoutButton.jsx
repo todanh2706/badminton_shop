@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import useAuthApi from "../hooks/authApi";
+import { useTranslation } from "react-i18next";
 
 export default function LogoutButton() {
     const navigate = useNavigate();
     const { logout } = useAuthApi();
+    const { t } = useTranslation();
 
     async function handleClick() {
         // Call to logout api
@@ -17,7 +19,7 @@ export default function LogoutButton() {
             className="hover:text-black flex items-center gap-1"
             onClick={handleClick}
         >
-            Log out
+            {t("Logout")}
         </button>
     );
 }

@@ -30,7 +30,7 @@ export default function useUserApi() {
             return res.data;
         } catch (err) {
             console.error("Failed to change email: ", err);
-            const msg = err.response?.data?.message || err.message || "Sign in failed!";
+            const msg = err.response?.data?.message || err.message || "Change email failed!";
             throw new Error(msg);
         }
     }, [api, accessToken, setUser]);
@@ -47,10 +47,27 @@ export default function useUserApi() {
             return res.data;
         } catch (err) {
             console.error("Failed to change phone number: ", err);
-            const msg = err.response?.data?.message || err.message || "Sign in failed!";
+            const msg = err.response?.data?.message || err.message || "Change phone failed!";
             throw new Error(msg);
         }
     }, [api, accessToken, setUser]);
 
-    return { getUser, changeEmail, changePhone };
+    const changeAddress = useCallback(async (address) => {
+        try {
+            const res = await api.post(
+                "/api/userdata/change-address",
+                { address },
+                { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+            if (res.data.phone) setUser((prev) => ({ ...prev, address: res.data.address }));
+
+            return res.data;
+        } catch (err) {
+            console.error("Failed to change address: ", err);
+            const msg = err.response?.data?.message || err.message || "Change address failed!";
+            throw new Error(msg);
+        }
+    }, [api, accessToken, setUser]);
+
+    return { getUser, changeEmail, changePhone, changeAddress };
 }

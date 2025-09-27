@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 import useProductApi from "../hooks/productApi";
 import ProductList from "../components/ProductList";
 
-export default function Accessories() {
+export default function Shuttlecocks() {
     const { getProductByCategory } = useProductApi();
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const p = await getProductByCategory("Accessories");
+            const p = await getProductByCategory("Shuttlecocks");
             setProducts(p);
         }
         fetchProducts();
-    }, [getProductByCategory])
+    }, [getProductByCategory]);
 
     return (
         <>

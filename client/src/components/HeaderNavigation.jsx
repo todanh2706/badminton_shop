@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Menu, X, Search } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion as Motion } from "framer-motion";
 import UserButton from "./UserButton";
@@ -15,13 +15,13 @@ export default function HeaderNavigation() {
     const { t, i18n } = useTranslation();
 
     const navLinks = [
-        { name: "Accessories", href: "/accessories" },
-        { name: "Apparel", href: "/apparel" },
-        { name: "Bags", href: "/bags" },
-        { name: "Racquets", href: "/racquets" },
-        { name: "Shoes", href: "/shoes" },
-        { name: "Shuttlecocks", href: "/shuttle_cocks" },
-        { name: "Strings", href: "/strings" },
+        { name: "Accessories", href: "/home/accessories" },
+        { name: "Apparels", href: "/home/apparels" },
+        { name: "Bags", href: "/home/bags" },
+        { name: "Racquets", href: "/home/racquets" },
+        { name: "Shoes", href: "/home/shoes" },
+        { name: "Shuttlecocks", href: "/home/shuttlecocks" },
+        { name: "Strings", href: "/home/strings" },
     ];
 
     const handleNavigate = (link) => {
@@ -69,31 +69,38 @@ export default function HeaderNavigation() {
                 <div className="max-w-7xl mx-auto px-4 flex justify-between items-center py-3">
                     {/* Logo */}
                     <a href="/" className="text-2xl font-bold tracking-wide">
-                        <img src="./yonex_logo.svg" width="100" />
+                        <img src="/yonex_logo.svg" width="100" />
                     </a>
 
                     {/* Desktop menu */}
                     <ul className="hidden md:flex justify-center space-x-8 relative">
-                        {navLinks.map((item) => (
-                            <li key={item.name} className="relative">
-                                <button
-                                    onClick={() => {
-                                        setActive(item.name);
-                                        handleNavigate(item);
-                                    }}
-                                    className={`relative px-4 py-2 text-lg font-semibold transition-colors duration-300 ${active === item.name ? "text-white" : "text-gray-200 hover:text-yellow-300"}`}
-                                >
-                                    {t(item.name)}
-                                    {active === item.name && (
-                                        <Motion.div
-                                            layoutId="underline"
-                                            className="absolute left-0 right-0 -bottom-1 h-1 rounded-full bg-yellow-300"
-                                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                                        />
-                                    )}
-                                </button>
-                            </li>
-                        ))}
+                        {navLinks.map((item) => {
+                            const isActive = location.pathname === item.href;
+                            return (
+                                <li key={item.name} className="relative">
+                                    <NavLink
+                                        to={item.href}
+                                        className={`relative px-4 py-2 text-lg font-semibold transition-colors duration-300 ${isActive
+                                            ? "text-white"
+                                            : "text-gray-200 hover:text-yellow-300"
+                                            }`}
+                                    >
+                                        {t(item.name)}
+                                        {isActive && (
+                                            <Motion.div
+                                                layoutId="underline"
+                                                className="absolute left-0 right-0 -bottom-1 h-1 rounded-full bg-yellow-300"
+                                                transition={{
+                                                    type: "spring",
+                                                    stiffness: 400,
+                                                    damping: 30,
+                                                }}
+                                            />
+                                        )}
+                                    </NavLink>
+                                </li>
+                            );
+                        })}
                     </ul>
 
                     {/* Mobile menu toggle */}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import HeaderNavigation from "../components/HeaderNavigation";
+// import HeaderNavigation from "../components/HeaderNavigation";
 import useProductApi from "../hooks/productApi";
 import ProductList from "../components/ProductList";
 
@@ -17,7 +17,7 @@ export default function Racquets() {
 
     return (
         <>
-            <HeaderNavigation />
+            {/* <HeaderNavigation /> */}
             <ProductList products={products} />
         </>
     );

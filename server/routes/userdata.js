@@ -68,4 +68,28 @@ router.post("/change-phone", authenticateToken, async (req, res) => {
     }
 })
 
+router.post("/change-address", authenticateToken, async (req, res) => {
+    try {
+        const user = await Users.findByPk(req.user.id, {
+            attributes: ["id", "address"]
+        });
+        if (!user) return res.status(404).json({ message: "User not found!" });
+
+        const { address } = req.body;
+
+        if (!address) {
+            return res.status(400).json({ message: "Invalid address!" });
+        }
+
+
+        user.address = address;
+        await user.save();
+
+        return res.json({ message: "Address updated successfully", address: user.address });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+})
+
 export default router;

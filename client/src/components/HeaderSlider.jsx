@@ -48,7 +48,7 @@ export default function HeaderSlider() {
                 <SwiperSlide>
                     <div className="w-full h-full relative">
                         <img
-                            src="./VA_collection.webp"
+                            src="/VA_collection.webp"
                             alt="Banner 1"
                             className="w-full h-full object-cover"
                         />
@@ -67,7 +67,7 @@ export default function HeaderSlider() {
                 <SwiperSlide>
                     <div className="w-full h-full relative">
                         <img
-                            src="./882024_collection.webp"
+                            src="/882024_collection.webp"
                             alt="Banner 2"
                             className="w-full h-full objective-cover"
                         />
@@ -85,7 +85,7 @@ export default function HeaderSlider() {
                 <SwiperSlide>
                     <div className="w-full h-full relative">
                         <img
-                            src="./99pro_gen3_collection.webp"
+                            src="/99pro_gen3_collection.webp"
                             alt="Banner 2"
                             className="w-full h-full objective-cover"
                         />

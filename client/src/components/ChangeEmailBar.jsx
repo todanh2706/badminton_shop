@@ -23,8 +23,9 @@ export default function ChangeEmailBar({ onChanged }) {
     };
 
     return (
-        <div>
+        <div className="inline-flex w-full gap-2">
             <input
+                className="flex-1 border rounded-md px-3 py-2 focus:ring-2 focus:ring-indigo-200"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -32,7 +33,7 @@ export default function ChangeEmailBar({ onChanged }) {
             />
             <button
                 onClick={handleChange}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md whitespace-nowrap"
                 disabled={loading}
             >
                 {loading ? "Changing..." : "Change"}

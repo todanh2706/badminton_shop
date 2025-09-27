@@ -7,24 +7,24 @@ const seedAdmin = async () => {
     try {
         await sequelize.sync(); // ensure DB schema is ready
 
-        const hashedPassword = await bcrypt.hash("admin123", 10);
+        const hashedPassword = await bcrypt.hash("123456", 10);
 
         const [admin, created] = await Users.findOrCreate({
-            where: { email: "todanh2706@gmail.com" },
+            where: { email: "thdanh23@clc.fitus.edu.vn" },
             defaults: {
                 password_hash: hashedPassword,
-                email: "todanh2706@gmail.com",
-                address: "Admin HQ",
+                email: "thdanh23@clc.fitus.edu.vn",
+                address: "227 NVC",
                 phone: "0913689550",
             },
         });
 
         const [product, check] = await Products.findOrCreate({
-            where: { name: "Astrox 99 Pro 2025" },
+            where: { name: "Wristband" },
             defaults: {
-                price: 190,
-                image: "./99pro_gen3_product.webp",
-                category: "Racquets",
+                price: 2,
+                image: "/wristband_product.webp",
+                category: "Accessories",
                 brand: "Yonex",
                 stock: 100,
             },

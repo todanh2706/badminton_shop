@@ -24,8 +24,9 @@ export default function ChangePhoneBar({ onChanged }) {
     };
 
     return (
-        <div>
+        <div className="inline-flex w-full gap-2">
             <input
+                className="flex-1 border rounded-md px-3 py-2 focus:ring- focus:ring-indigo-200"
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
@@ -33,7 +34,7 @@ export default function ChangePhoneBar({ onChanged }) {
             />
             <button
                 onClick={handleChange}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
+                className="bg-blue-500 text-white px-4 py-2 rounded whitespace-nowrap"
                 disabled={loading}
             >
                 {loading ? "Changing..." : "Change"}
