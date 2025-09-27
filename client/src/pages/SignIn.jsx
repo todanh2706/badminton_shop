@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthApi from "../hooks/authApi";
 
-export default function Sign_in() {
+export default function SignIn() {
     const { login } = useAuthApi();
     const [emailInput, setEmailInput] = useState("");
     const [password, setPassword] = useState("");

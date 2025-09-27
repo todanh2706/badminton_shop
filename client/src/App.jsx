@@ -3,9 +3,9 @@ import { AnimatePresence } from "framer-motion";
 import PageWrapper from "./components/PageWrapper";
 import HomeLayout from "./components/HomeLayout";
 import Home from "./pages/Home";
-import Sign_in from "./pages/Sign_in";
-import Sign_up from "./pages/Sign_up";
-import VerifyOtp from "./pages/Verify_otp";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
+import VerifyOtp from "./pages/VerifyOtp";
 import MyAccount from "./pages/MyAccount";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Accessories from "./pages/Accessories";
@@ -34,8 +34,8 @@ export default function App() {
           <Route path="strings" element={<PageWrapper><Strings /></PageWrapper>} />
           <Route path="shoes" element={<PageWrapper><Shoes /></PageWrapper>} />
         </Route>
-        <Route path="/signin" element={<PageWrapper><Sign_in /></PageWrapper>} />
-        <Route path="/signup" element={<PageWrapper><Sign_up /></PageWrapper>} />
+        <Route path="/signin" element={<PageWrapper><SignIn /></PageWrapper>} />
+        <Route path="/signup" element={<PageWrapper><SignUp /></PageWrapper>} />
         <Route path="/verify" element={<PageWrapper><VerifyOtp /></PageWrapper>} />
         <Route path="/myaccount" element={<ProtectedRoute><PageWrapper><MyAccount /></PageWrapper></ProtectedRoute>} />
       </Routes>

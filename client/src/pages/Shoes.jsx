@@ -2,18 +2,28 @@ import { useEffect, useState } from "react";
 // import HeaderNavigation from "../components/HeaderNavigation";
 import useProductApi from "../hooks/productApi";
 import ProductList from "../components/ProductList";
+import LoadingGrid from "../components/LoadingGrid";
 
 export default function Shoes() {
     const { getProductByCategory } = useProductApi();
     const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const p = await getProductByCategory("Shoes");
-            setProducts(p);
+            try {
+                const p = await getProductByCategory("Shoes");
+                setProducts(p);
+            } catch (err) {
+                alert(err.response?.data?.message || "Failed to fetch product data!");
+            } finally {
+                setLoading(false);
+            }
         }
         fetchProducts();
     }, [getProductByCategory]);
+
+    if (loading) return <LoadingGrid />
 
     return (
         <>

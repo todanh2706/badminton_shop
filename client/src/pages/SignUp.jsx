@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export default function Sign_up() {
+export default function SignUp() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmpassword, setConfirmpassword] = useState("");
