@@ -205,6 +205,7 @@ export default function MyAccount() {
                                     value={email}
                                     defaultValue={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    autoComplete="email"
                                 />
                             </div>
                             <div>
@@ -215,6 +216,7 @@ export default function MyAccount() {
                                     value={phone}
                                     defaultValue={phone}
                                     onChange={(e) => setPhone(e.target.value)}
+                                    autoComplete="phone"
                                 />
                             </div>
                             <div>
@@ -225,6 +227,7 @@ export default function MyAccount() {
                                     value={address}
                                     defaultValue={address}
                                     onChange={(e) => setAddress(e.target.value)}
+                                    autoComplete="street-address"
                                 />
                             </div>
                             <Motion.button
@@ -372,6 +375,7 @@ export default function MyAccount() {
                                         onChange={(e) => setOldPassword(e.target.value)}
                                         className="border p-2 rounded w-full"
                                         placeholder="Enter current password"
+                                        autoComplete="current-password"
                                     />
                                 </div>
 
@@ -383,6 +387,7 @@ export default function MyAccount() {
                                         onChange={(e) => setNewPassword(e.target.value)}
                                         className="border p-2 rounded w-full"
                                         placeholder="Enter new password"
+                                        autoComplete="new-password"
                                     />
                                 </div>
 
@@ -394,6 +399,7 @@ export default function MyAccount() {
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         className="border p-2 rounded w-full"
                                         placeholder="Enter new password again"
+                                        autoComplete="new-password"
                                     />
                                 </div>
 
