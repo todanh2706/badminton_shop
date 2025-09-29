@@ -69,5 +69,21 @@ export default function useUserApi() {
         }
     }, [api, accessToken, setUser]);
 
-    return { getUser, changeEmail, changePhone, changeAddress };
+    const changePassword = useCallback(async (oldPassword, newPassword) => {
+        try {
+            const res = await api.post(
+                "/api/userdata/change-password",
+                { oldPassword, newPassword },
+                { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+
+            return res.data;
+        } catch (err) {
+            console.error("Failed to change password: ", err);
+            const msg = err.response?.data?.message || err.message || "Change password failed!";
+            throw new Error(msg);
+        }
+    }, [api, accessToken]);
+
+    return { getUser, changeEmail, changePhone, changeAddress, changePassword };
 }

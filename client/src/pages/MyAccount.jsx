@@ -6,13 +6,18 @@ import useAuthContext from "../context/useAuthContext";
 import { User, Lock, MapPin, CreditCard, ShoppingBag, Globe, ArrowLeft } from "lucide-react";
 
 export default function MyAccount() {
-    const { getUser, changeEmail, changePhone, changeAddress } = useUserApi();
+    const { getUser, changeEmail, changePhone, changeAddress, changePassword } = useUserApi();
     const { user } = useAuthContext();
     const [activeTab, setActiveTab] = useState("profile");
     const [email, setEmail] = useState(user.email);
     const [phone, setPhone] = useState(user.phone);
     const [address, setAddress] = useState(user.address);
+    const [showForm, setShowForm] = useState(false);
+    const [oldPassword, setOldPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     const isChanged = email !== user.email || phone !== user.phone || address !== user.address
@@ -39,39 +44,100 @@ export default function MyAccount() {
 
     if (!user) return <p className="text-center mt-10 text-gray-500">Loading...</p>;
 
+    function validate() {
+        if (!email) return "Please enter your new email!";
+        const emailRe = /\S+@\S+\.\S+/;
+        if (!emailRe.test(email)) return "Please enter a valid email address.";
+
+        if (!phone) return "Please enter your phone number!";
+        const phoneRe = /^[0-9]{9,15}$/;
+        if (!phoneRe.test(phone)) return "Please enter a valid phone number.";
+
+        if (!address) return "Please enter your address!";
+        if (address.length < 5) return "Address must be at least 5 characters long.";
+
+        return null;
+    }
+
     const handleChangeButton = async () => {
-        if (email !== user.email) {
-            try {
-                setLoading(true);
-                const res = await changeEmail(email);
-                console.log(res.message || "Email updated successfully");
-            } catch (err) {
-                alert(err.response?.data?.message || "Failed to change email!");
-            } finally {
-                setLoading(false);
-            }
+        setError("");
+        const v = validate();
+        if (v) {
+            setError(v);
+            return;
         }
-        if (phone !== user.phone) {
-            try {
-                setLoading(true);
-                const res = await changePhone(phone);
-                console.log(res.message || "Phone updated successfully");
-            } catch (err) {
-                alert(err.response?.data?.message || "Failed to change phone!");
-            } finally {
-                setLoading(false);
+
+        try {
+            if (email !== user.email) {
+                try {
+                    setLoading(true);
+                    const res = await changeEmail(email);
+                    alert(res.message || "Email updated successfully");
+                } catch (err) {
+                    alert(err.response?.data?.message || "Failed to change email!");
+                } finally {
+                    setLoading(false);
+                }
             }
+            if (phone !== user.phone) {
+                try {
+                    setLoading(true);
+                    const res = await changePhone(phone);
+                    alert(res.message || "Phone updated successfully");
+                } catch (err) {
+                    alert(err.response?.data?.message || "Failed to change phone!");
+                } finally {
+                    setLoading(false);
+                }
+            }
+            if (address !== user.address) {
+                try {
+                    setLoading(true);
+                    const res = await changeAddress(address);
+                    alert(res.message || "Address updated successfully");
+                } catch (err) {
+                    alert(err.response?.data?.message || "Failed to change address!");
+                } finally {
+                    setLoading(false);
+                }
+            }
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to update information!");
+        } finally {
+            setLoading(false);
         }
-        if (address !== user.address) {
-            try {
-                setLoading(true);
-                const res = await changeAddress(address);
-                console.log(res.message || "Address updated successfully");
-            } catch (err) {
-                alert(err.response?.data?.message || "Failed to change address!");
-            } finally {
-                setLoading(false);
-            }
+    }
+
+    async function handleChangePassword(e) {
+        e.preventDefault();
+        setError("");
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            setError("All fields are required!");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            setError("New passwords do not match!");
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setError("Password must be at least 6 characters long!");
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const res = await changePassword(oldPassword, newPassword);
+            alert(res.message || "Changed password successfully");
+        } catch (err) {
+            setError(err.response?.data?.message || "Failed to change password!");
+        } finally {
+            setLoading(false);
+            setOldPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
         }
     }
 
@@ -120,6 +186,16 @@ export default function MyAccount() {
                     <section>
                         <h3 className="text-xl font-semibold mb-4">Profile Information</h3>
                         {/* Profile form */}
+
+                        {error && (
+                            <div
+                                role="alert"
+                                className="mt-4 border border-red-200 bg-red-50 text-red-700 px-4 py-2 rounded"
+                            >
+                                {error}
+                            </div>
+                        )}
+
                         <div className="bg-white shadow rounded-lg p-4 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium">Email</label>
@@ -152,17 +228,46 @@ export default function MyAccount() {
                                 />
                             </div>
                             <Motion.button
-                                className={`px-4 py-2 rounded-md ${isChanged
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full inline-flex justify-center items-center gap-2 rounded-md px-4 py-2 ${isChanged
                                     ? "bg-blue-500 text-white hover:bg-blue-600"
                                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     }}`}
+                                aria-busy={loading}
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 transition={{ duration: 0.15 }}
                                 onClick={handleChangeButton}
-                                disabled={loading}
                             >
-                                {loading ? "Changing..." : "Save change"}
+                                {loading ? (
+                                    <>
+                                        <svg
+                                            className="animate-spin h-5 w-5 text-white"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8v8z"
+                                            ></path>
+                                        </svg>
+                                        Loading...
+                                    </>
+                                ) : (
+                                    "Save change"
+                                )}
                             </Motion.button>
                         </div>
                     </section>
@@ -171,15 +276,212 @@ export default function MyAccount() {
                 {activeTab === "security" && (
                     <section>
                         <h3 className="text-xl font-semibold mb-4">Security</h3>
-                        <div className="bg-white shadow rounded-lg p-4 flex gap-4">
-                            <button className="flex-1 bg-blue-500 text-white px-4 py-2 rounded-md">
-                                Change Password
-                            </button>
-                            <button className="flex-1 bg-green-500 text-white px-4 py-2 rounded-md">
-                                Enable 2FA
-                            </button>
-                        </div>
+                        {/* <div className="bg-white shadow rounded-lg p-4 flex gap-4"> */}
+                        {!showForm ? (
+                            <div className="bg-white shadow rounded-lg p-4 flex gap-4">
+                                <Motion.button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-blue-600 text-white px-4 py-2 font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-60"
+                                    aria-busy={loading}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ duration: 0.15 }}
+                                    onClick={() => setShowForm(true)}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <svg
+                                                className="animate-spin h-5 w-5 text-white"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                aria-hidden="true"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                ></circle>
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v8z"
+                                                ></path>
+                                            </svg>
+                                            Loading...
+                                        </>
+                                    ) : (
+                                        "Change Password"
+                                    )}
+                                </Motion.button>
 
+                                <Motion.button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-green-600 text-white px-4 py-2 font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-60"
+                                    aria-busy={loading}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    transition={{ duration: 0.15 }}
+                                // onClick={handleChangeButton}
+                                >
+                                    {loading ? (
+                                        <>
+                                            <svg
+                                                className="animate-spin h-5 w-5 text-white"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                aria-hidden="true"
+                                            >
+                                                <circle
+                                                    className="opacity-25"
+                                                    cx="12"
+                                                    cy="12"
+                                                    r="10"
+                                                    stroke="currentColor"
+                                                    strokeWidth="4"
+                                                ></circle>
+                                                <path
+                                                    className="opacity-75"
+                                                    fill="currentColor"
+                                                    d="M4 12a8 8 0 018-8v8z"
+                                                ></path>
+                                            </svg>
+                                            Loading...
+                                        </>
+                                    ) : (
+                                        "Enable 2FA"
+                                    )}
+                                </Motion.button>
+                            </div>
+                        ) : (
+                            <form
+                                onSubmit={handleChangePassword}
+                                className="bg-white shadow rounded-lg p-6 flex flex-col gap-4 max-w-md"
+                            >
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Current Password</label>
+                                    <input
+                                        type="password"
+                                        value={oldPassword}
+                                        onChange={(e) => setOldPassword(e.target.value)}
+                                        className="border p-2 rounded w-full"
+                                        placeholder="Enter current password"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">New Password</label>
+                                    <input
+                                        type="password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        className="border p-2 rounded w-full"
+                                        placeholder="Enter new password"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Confirm Your New Password</label>
+                                    <input
+                                        type="password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="border p-2 rounded w-full"
+                                        placeholder="Enter new password again"
+                                    />
+                                </div>
+
+                                {error && <p className="text-red-500 text-sm">{error}</p>}
+
+                                <div className="flex gap-2">
+                                    <Motion.button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-blue-600 text-white px-4 py-2 font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-60"
+                                        aria-busy={loading}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        transition={{ duration: 0.15 }}
+                                    >
+                                        {loading ? (
+                                            <>
+                                                <svg
+                                                    className="animate-spin h-5 w-5 text-white"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    aria-hidden="true"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    ></circle>
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8v8z"
+                                                    ></path>
+                                                </svg>
+                                                Loading...
+                                            </>
+                                        ) : (
+                                            "Save"
+                                        )}
+                                    </Motion.button>
+
+                                    <Motion.button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-yellow-600 text-white px-4 py-2 font-semibold shadow hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-60"
+                                        aria-busy={loading}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        transition={{ duration: 0.15 }}
+                                        onClick={() => setShowForm(false)}
+                                    >
+                                        {loading ? (
+                                            <>
+                                                <svg
+                                                    className="animate-spin h-5 w-5 text-white"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                    aria-hidden="true"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    ></circle>
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8v8z"
+                                                    ></path>
+                                                </svg>
+                                                Loading...
+                                            </>
+                                        ) : (
+                                            "Cancle"
+                                        )}
+                                    </Motion.button>
+                                </div>
+                            </form>
+                        )}
+                        {/* </div> */}
                     </section>
                 )}
 

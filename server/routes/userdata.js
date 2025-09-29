@@ -1,4 +1,5 @@
 import express from "express";
+import bcrypt from "bcryptjs";
 import Users from "../models/Users.js";
 import { authenticateToken } from "../middleware/auth.js";
 
@@ -66,7 +67,7 @@ router.post("/change-phone", authenticateToken, async (req, res) => {
         console.log(err);
         res.status(500).json({ message: "Server error", error: err.message });
     }
-})
+});
 
 router.post("/change-address", authenticateToken, async (req, res) => {
     try {
@@ -90,6 +91,37 @@ router.post("/change-address", authenticateToken, async (req, res) => {
         console.log(err);
         res.status(500).json({ message: "Server error", error: err.message });
     }
-})
+});
+
+router.post("/change-password", authenticateToken, async (req, res) => {
+    try {
+        const user = await Users.findByPk(req.user.id, {
+            attributes: ["id", "password_hash"]
+        });
+        if (!user) return res.status(404).json({ message: "User not found!" });
+
+        const { oldPassword, newPassword } = req.body;
+
+        if (!oldPassword || !newPassword) {
+            return res.status(400).json({ message: "Missing old or new password!" });
+        }
+
+        const match = await bcrypt.compare(oldPassword, user.password_hash);
+        if (!match) {
+            return res.status(401).json({ message: "Old password is incorrect!" });
+        }
+
+        const saltRounds = 10;
+        const newHash = await bcrypt.hash(newPassword, saltRounds);
+
+        user.password_hash = newHash;
+        await user.save();
+
+        return res.json({ message: "Password updated successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+});
 
 export default router;
