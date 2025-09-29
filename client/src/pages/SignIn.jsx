@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useAuthApi from "../hooks/authApi";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignIn() {
     const { login } = useAuthApi();
@@ -9,6 +10,7 @@ export default function SignIn() {
     const [remember, setRemember] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [current, setCurrent] = useState(0);
     const navigate = useNavigate();
 
@@ -130,15 +132,28 @@ export default function SignIn() {
                                     Forgot?
                                 </a>
                             </div>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                aria-required="true"
-                                className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
-                                placeholder="Enter your password"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    aria-required="true"
+                                    className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                                    placeholder="Enter your password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 end-0 flex items-center z-20 px-2.5 cursor-pointer text-gray-400 rounded-e-md"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff size={20} aria-hidden="true" />
+                                    ) : (
+                                        <Eye size={20} aria-hidden="true" />
+                                    )}
+                                </button>
+                            </div>
                         </label>
 
                         <div className="flex items-center justify-between">

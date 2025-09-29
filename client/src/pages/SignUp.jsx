@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import useAuthApi from "../hooks/authApi";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUp() {
     const [email, setEmail] = useState("");
     const [fullName, setFullName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmpassword, setConfirmpassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [dateOfBirth, setDateOfBirth] = useState("");
     const [phone, setPhone] = useState("");
     const [error, setError] = useState("");
@@ -140,15 +142,28 @@ export default function SignUp() {
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-medium text-slate-700">Password</span>
                             </div>
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                aria-required="true"
-                                className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
-                                placeholder="Enter your password"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                    aria-required="true"
+                                    className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                                    placeholder="Enter your password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 end-0 flex items-center z-20 px-2.5 cursor-pointer text-gray-400 rounded-e-md"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff size={20} aria-hidden="true" />
+                                    ) : (
+                                        <Eye size={20} aria-hidden="true" />
+                                    )}
+                                </button>
+                            </div>
                         </label>
 
                         <label className="block">

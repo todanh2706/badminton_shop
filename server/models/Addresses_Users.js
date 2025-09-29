@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database";
+import sequelize from "../config/database.js";
 
 const Addresses_Users = sequelize.define("Addresses_User", {
     id: {
@@ -15,14 +15,6 @@ const Addresses_Users = sequelize.define("Addresses_User", {
             key: "id",
         },
         onDelete: "CASCADE",
-    },
-    full_name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    phone_number: {
-        type: DataTypes.STRING,
-        allowNull: false,
     },
     street_address: {
         type: DataTypes.STRING,

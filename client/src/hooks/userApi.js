@@ -119,5 +119,20 @@ export default function useUserApi() {
         }
     }, [api, accessToken]);
 
-    return { getUser, changeEmail, changePhone, changePassword, changeFullName, changeDateOfBirth };
+    const getAddresses = useCallback(async () => {
+        try {
+            const res = await api.get(
+                "/api/userdata/addresses",
+                { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+
+            return res.data;
+        } catch (err) {
+            console.error("Failed to get saved addresses: ", err);
+            const msg = err.response?.data?.message || err.message || "Get saved addresses failed!";
+            throw new Error(msg);
+        }
+    }, [api, accessToken])
+
+    return { getUser, changeEmail, changePhone, changePassword, changeFullName, changeDateOfBirth, getAddresses };
 }

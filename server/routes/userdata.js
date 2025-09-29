@@ -1,7 +1,9 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import Users from "../models/Users.js";
+import { Addresses_Users } from "../models/index.js"
 import { authenticateToken } from "../middleware/auth.js";
+import { where } from "sequelize";
 
 const router = express.Router();
 
@@ -167,5 +169,25 @@ router.post("/change-password", authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Server error", error: err.message });
     }
 });
+
+router.get("/addresses", authenticateToken, async (req, res) => {
+    try {
+        const user = await Users.findOne({ where: { id: req.user.id } }, {
+            attributes: ["id"]
+        });
+
+        if (!user) return res.status(404).json({ message: "User not found!" });
+
+        const addresses = await Addresses_Users.findAll({ where: { user_id: req.user.id } }, {
+            attributes: ["id", "street_address", "city", "postal_code", "country"]
+        });
+        if (!addresses) return res.json({ message: "No saved address." });
+
+        return res.json({ message: "Get user's saved addresses successfully", addresses });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+})
 
 export default router;
