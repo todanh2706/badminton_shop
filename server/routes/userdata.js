@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/me", authenticateToken, async (req, res) => {
     try {
         const user = await Users.findByPk(req.user.id, {
-            attributes: ["id", "email", "password_hash", "address", "phone"]
+            attributes: ["id", "email", "password_hash", "phone", "full_name", "date_of_birth"]
         });
         if (!user) return res.status(404).json({ message: "User not found!" });
 
@@ -65,6 +65,50 @@ router.post("/change-phone", authenticateToken, async (req, res) => {
         return res.json({ message: "Phone number updated successfully", phone: user.phone });
     } catch (err) {
         console.log(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+});
+
+router.post("/change-full_name", authenticateToken, async (req, res) => {
+    try {
+        const user = await Users.findByPk(req.user.id, {
+            attributes: ["id", "full_name"]
+        });
+        if (!user) return res.status(404).json({ message: "User not found!" });
+
+        const { full_name } = req.body;
+
+        if (!full_name) {
+            return res.status(400).json({ message: "Invalid full name!" });
+        }
+
+        user.full_name = full_name;
+        await user.save();
+
+        return res.json({ message: "Full name updated successfully", full_name: user.full_name });
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+});
+
+router.post("/change-date_of_birth", authenticateToken, async (req, res) => {
+    try {
+        const user = await Users.findByPk(req.user.id, {
+            attributes: ["id", "date_of_birth"]
+        });
+        if (!user) return res.status(404).json({ message: "User not found!" });
+
+        const { date_of_birth } = req.body;
+
+        if (!date_of_birth) {
+            return res.status(400).json({ message: "Invalid date of birth!" });
+        }
+
+        user.date_of_birth = date_of_birth;
+        await user.save();
+
+        return res.json({ message: "Dtae of birth updated successfully", date_of_birth: user.date_of_birth });
+    } catch (err) {
         res.status(500).json({ message: "Server error", error: err.message });
     }
 });

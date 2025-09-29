@@ -53,17 +53,6 @@ export default function SignIn() {
         try {
             setLoading(true);
 
-            // const res = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/auth/signin`, {
-            //     method: "POST",
-            //     headers: { "Content-Type": "application/json" },
-            //     body: JSON.stringify({ email: emailInput, password, remember }),
-            // });
-
-            // if (!res.ok) {
-            //     const body = await res.json().catch(() => ({}));
-            //     throw new Error(body.message || "Sign in failed!");
-            // }
-
             await login(emailInput, password, remember);
 
             // const data = await res.json();

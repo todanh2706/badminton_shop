@@ -6,12 +6,14 @@ import useAuthContext from "../context/useAuthContext";
 import { User, Lock, MapPin, CreditCard, ShoppingBag, Globe, ArrowLeft } from "lucide-react";
 
 export default function MyAccount() {
-    const { getUser, changeEmail, changePhone, changeAddress, changePassword } = useUserApi();
+    const { getUser, changeEmail, changePhone, changePassword, changeFullName, changeDateOfBirth } = useUserApi();
     const { user } = useAuthContext();
     const [activeTab, setActiveTab] = useState("profile");
     const [email, setEmail] = useState(user.email);
+    const [fullName, setFullName] = useState(user.full_name);
+    const [dateOfBirth, setDateOfBirth] = useState(user.date_of_birth);
     const [phone, setPhone] = useState(user.phone);
-    const [address, setAddress] = useState(user.address);
+    // const [address, setAddress] = useState(user.address);
     const [showForm, setShowForm] = useState(false);
     const [oldPassword, setOldPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -20,7 +22,7 @@ export default function MyAccount() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const isChanged = email !== user.email || phone !== user.phone || address !== user.address
+    const isChanged = email !== user.email || phone !== user.phone
 
     const tabs = [
         { id: "profile", label: "Profile", icon: <User size={18} /> },
@@ -53,8 +55,8 @@ export default function MyAccount() {
         const phoneRe = /^[0-9]{9,15}$/;
         if (!phoneRe.test(phone)) return "Please enter a valid phone number.";
 
-        if (!address) return "Please enter your address!";
-        if (address.length < 5) return "Address must be at least 5 characters long.";
+        // if (!address) return "Please enter your address!";
+        // if (address.length < 5) return "Address must be at least 5 characters long.";
 
         return null;
     }
@@ -90,13 +92,35 @@ export default function MyAccount() {
                     setLoading(false);
                 }
             }
-            if (address !== user.address) {
+            // if (address !== user.address) {
+            //     try {
+            //         setLoading(true);
+            //         const res = await changeAddress(address);
+            //         alert(res.message || "Address updated successfully");
+            //     } catch (err) {
+            //         alert(err.response?.data?.message || "Failed to change address!");
+            //     } finally {
+            //         setLoading(false);
+            //     }
+            // }
+            if (fullName !== user.full_name) {
                 try {
                     setLoading(true);
-                    const res = await changeAddress(address);
-                    alert(res.message || "Address updated successfully");
+                    const res = await changeFullName(fullName);
+                    alert(res.message || "Full name updated successfully");
                 } catch (err) {
-                    alert(err.response?.data?.message || "Failed to change address!");
+                    alert(err.response?.data?.message || "Failed to change full name!");
+                } finally {
+                    setLoading(false);
+                }
+            }
+            if (dateOfBirth !== user.date_of_birth) {
+                try {
+                    setLoading(true);
+                    const res = await changeDateOfBirth(fullName);
+                    alert(res.message || "Date of birth updated successfully");
+                } catch (err) {
+                    alert(err.response?.data?.message || "Failed to change date of birth!");
                 } finally {
                     setLoading(false);
                 }
@@ -209,6 +233,28 @@ export default function MyAccount() {
                                 />
                             </div>
                             <div>
+                                <label className="block text-sm font-medium">Full name</label>
+                                <input
+                                    className="w-full border rounded-md px-3 py-2 mt-1 text-gray-400 focus:text-black"
+                                    type="text"
+                                    value={fullName}
+                                    defaultValue={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    autoComplete="name"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium">Date of birth</label>
+                                <input
+                                    className="w-full border rounded-md px-3 py-2 mt-1 text-gray-400 focus:text-black"
+                                    type="date"
+                                    value={dateOfBirth}
+                                    defaultValue={dateOfBirth}
+                                    onChange={(e) => setDateOfBirth(e.target.value)}
+                                    autoComplete="bday"
+                                />
+                            </div>
+                            <div>
                                 <label className="block text-sm font-medium">Phone</label>
                                 <input
                                     className="w-full border rounded-md px-3 py-2 mt-1 text-gray-400 focus:text-black"
@@ -219,7 +265,7 @@ export default function MyAccount() {
                                     autoComplete="phone"
                                 />
                             </div>
-                            <div>
+                            {/* <div>
                                 <label className="block text-sm font-medium">Address</label>
                                 <input
                                     className="w-full border rounded-md px-3 py-2 mt-1 text-gray-400 focus:text-black"
@@ -229,7 +275,7 @@ export default function MyAccount() {
                                     onChange={(e) => setAddress(e.target.value)}
                                     autoComplete="street-address"
                                 />
-                            </div>
+                            </div> */}
                             <Motion.button
                                 type="submit"
                                 disabled={loading}
@@ -325,7 +371,7 @@ export default function MyAccount() {
                                 <Motion.button
                                     type="submit"
                                     disabled={loading}
-                                    className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-green-600 text-white px-4 py-2 font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-60"
+                                    className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-green-600 text-white px-4 py-2 font-semibold shadow hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-60"
                                     aria-busy={loading}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}

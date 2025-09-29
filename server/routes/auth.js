@@ -58,15 +58,15 @@ router.post("/signin", async (req, res) => {
 
 // Sign up route
 router.post("/signup", async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, fullName, dateOfBirth, phone } = req.body;
 
     try {
-        // Check valid information
-        if (!email || !password) {
-            return res.status(400).json({ message: "Email and password are required!" });
+        // Check required
+        if (!email || !password || !fullName || !dateOfBirth || !phone) {
+            return res.status(400).json({ message: "All fields are required!" });
         }
 
-        // Check if user already exist
+        // Check duplicate
         const user = await Users.findOne({ where: { email } });
         if (user) {
             return res.status(400).json({ message: "Email already registered!" });
@@ -76,65 +76,68 @@ router.post("/signup", async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
 
-        const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // 1 minute
-        const otpCode = ("" + Math.floor(100000 + Math.random() * 900000)); // 6 digits
-        Otps.create({
+        // Create user
+        const newUser = await Users.create({
             email,
             password_hash,
+            full_name: fullName,
+            date_of_birth: dateOfBirth,
+            phone,
+        });
+
+        res.json({
+            message: "User signed up successfully. Please log in to continue.",
+            user: { id: newUser.id, email: newUser.email }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+});
+
+router.post("/verify-otp", async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        // Check if user exists
+        const user = await Users.findOne({ where: { email } });
+        if (!user) {
+            return res.status(400).json({ message: "User not found!" });
+        }
+
+        // Create OTP record
+        const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // 1 minute
+        const otpCode = ("" + Math.floor(100000 + Math.random() * 900000)); // 6 digits
+
+        await Otps.create({
+            email,
             otp: otpCode,
             expires_at: expiresAt,
-        }).catch(err => console.error("Failed to save OTP:", err));
+        });
 
-        // Send opt to email
+        // Send OTP email
         const transporter = nodemailer.createTransport({
             host: "smtp-relay.brevo.com",
             port: 587,
             secure: false,
             auth: {
                 user: process.env.EMAIL_SENDER,
-                pass: process.env.EMAIL_PASS
+                pass: process.env.EMAIL_PASS,
             },
         });
 
         await transporter.verify();
 
         await transporter.sendMail({
-            from: `"Badminton shop" <${process.env.EMAIL_USER}>`,
+            from: `"Badminton shop" <${process.env.EMAIL_SENDER}>`,
             to: email,
             subject: "Verify your email",
-            text: `Your OTP code is: ${otpCode}`
+            text: `Your OTP code is: ${otpCode}`,
         });
-        console.log("check");
 
         res.json({ message: "OTP sent to your email" });
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Server error", error: err.message });
-    }
-});
-
-router.post("/verify-otp", async (req, res) => {
-    const { email, otp } = req.body;
-
-    try {
-        const record = await Otps.findOne({ where: { email, otp } });
-        if (!record) return res.status(400).json({ message: "Invalid OTP" });
-
-        if (record.expires_at < new Date()) {
-            return res.status(400).json({ message: "OTP expired" });
-        }
-
-        // Create user
-        const user = await Users.create({
-            email: record.email,
-            password_hash: record.password_hash
-        });
-
-        // Delete OTP
-        await record.destroy();
-
-        res.json({ message: "Account created successfully", user: { id: user.id, email: user.email } });
-    } catch (err) {
+        console.error(err);
         res.status(500).json({ message: "Server error", error: err.message });
     }
 });

@@ -1,46 +1,46 @@
 import { DataTypes } from "sequelize";
-import sequelize from "../config/database.js";
+import sequelize from "../config/database";
 
-const Users = sequelize.define("User", {
+const Addresses_Users = sequelize.define("Addresses_User", {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
     },
-    email: {
-        type: DataTypes.STRING,
+    user_id: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
+        references: {
+            model: "Users",
+            key: "id",
+        },
+        onDelete: "CASCADE",
     },
     full_name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    password_hash: {
+    phone_number: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    date_of_birth: {
-        type: DataTypes.DATEONLY,
-        allowNull: false,
-    },
-    phone: {
-        type: DataTypes.STRING,
-    },
-    role: {
+    street_address: {
         type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: "user"
     },
-    is_active: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: true,
+    city: {
+        type: DataTypes.STRING,
+        allowNull: false,
     },
-    email_verified: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+    postal_code: {
+        type: DataTypes.STRING,
+        allowNull: false,
     },
-    phone_verified: {
+    country: {
+        type: DataTypes.STRING,
+        defaultValue: "Vietnam",
+    },
+    is_default: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
@@ -48,4 +48,4 @@ const Users = sequelize.define("User", {
     timestamps: true,
 });
 
-export default Users;
+export default Addresses_Users;

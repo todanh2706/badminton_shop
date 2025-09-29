@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
+import useAuthApi from "../hooks/authApi";
+import { useNavigate } from "react-router-dom";
 
 export default function SignUp() {
     const [email, setEmail] = useState("");
+    const [fullName, setFullName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmpassword, setConfirmpassword] = useState("");
+    const [dateOfBirth, setDateOfBirth] = useState("");
+    const [phone, setPhone] = useState("");
     const [error, setError] = useState("");
     const [current, setCurrent] = useState(0);
     const [loading, setLoading] = useState(false);
+    const { signup } = useAuthApi();
+    const navigate = useNavigate();
 
     const images = [
         "/grpht_thrttl.webp",
@@ -29,6 +36,9 @@ export default function SignUp() {
         if (!re.test(email)) return "Please enter a valid email address.";
         if (!password) return "Please enter your password.";
         if (password.length < 6) return "Password must be at least 6 characters.";
+        if (!fullName) return "Please enter your full name.";
+        if (!dateOfBirth) return "Please enter your date of birth.";
+        if (!phone) return "Please enter your phone number.";
         return null;
     }
 
@@ -48,21 +58,8 @@ export default function SignUp() {
 
         try {
             setLoading(true);
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/auth/signup`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
-
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body.message || "Sign up failed!");
-            }
-
-            const data = await res.json();
-            console.log("Signed up:", data);
-
-            window.location.href = `/verify?email=${encodeURIComponent(email)}`;
+            await signup(email, password, fullName, dateOfBirth, phone);
+            navigate("/signin");
         } catch (err) {
             setError(err.message);
         } finally {
@@ -97,6 +94,45 @@ export default function SignUp() {
                                 aria-required="true"
                                 className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
                                 placeholder="Enter your email"
+                            />
+                        </label>
+
+                        <label className="block">
+                            <span className="text-sm font-medium text-slate-700">Full name</span>
+                            <input
+                                type="text"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                required
+                                aria-required="true"
+                                className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                                placeholder="Enter your full name"
+                            />
+                        </label>
+
+                        <label className="block">
+                            <span className="text-sm font-medium text-slate-700">Date of birth</span>
+                            <input
+                                type="date"
+                                value={dateOfBirth}
+                                onChange={(e) => setDateOfBirth(e.target.value)}
+                                required
+                                aria-required="true"
+                                className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                                placeholder="Enter your birthday"
+                            />
+                        </label>
+
+                        <label className="block">
+                            <span className="text-sm font-medium text-slate-700">Phone number</span>
+                            <input
+                                type="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                required
+                                aria-required="true"
+                                className="mt-1 block w-full rounded-md border border-slate-200 px-3 py-2 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                                placeholder="Enter your phone number"
                             />
                         </label>
 

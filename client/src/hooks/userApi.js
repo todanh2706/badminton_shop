@@ -52,22 +52,56 @@ export default function useUserApi() {
         }
     }, [api, accessToken, setUser]);
 
-    const changeAddress = useCallback(async (address) => {
+    const changeFullName = useCallback(async (full_name) => {
         try {
             const res = await api.post(
-                "/api/userdata/change-address",
-                { address },
+                "/api/userdata/change-full_name",
+                { full_name },
                 { headers: { Authorization: `Bearer ${accessToken}` } }
             );
-            if (res.data.phone) setUser((prev) => ({ ...prev, address: res.data.address }));
+            if (res.data.full_name) setUser((prev) => ({ ...prev, full_name: res.data.full_name }));
 
             return res.data;
         } catch (err) {
-            console.error("Failed to change address: ", err);
-            const msg = err.response?.data?.message || err.message || "Change address failed!";
+            console.error("Failed to change ful name: ", err);
+            const msg = err.response?.data?.message || err.message || "Change full name failed!";
             throw new Error(msg);
         }
     }, [api, accessToken, setUser]);
+
+    const changeDateOfBirth = useCallback(async (date_of_birth) => {
+        try {
+            const res = await api.post(
+                "/api/userdata/change-date_of_birth",
+                { date_of_birth },
+                { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+            if (res.data.date_of_birth) setUser((prev) => ({ ...prev, date_of_birth: res.data.date_of_birth }));
+
+            return res.data;
+        } catch (err) {
+            console.error("Failed to change date of birth: ", err);
+            const msg = err.response?.data?.message || err.message || "Change date of birth failed!";
+            throw new Error(msg);
+        }
+    }, [api, accessToken, setUser]);
+
+    // const changeAddress = useCallback(async (address) => {
+    //     try {
+    //         const res = await api.post(
+    //             "/api/userdata/change-address",
+    //             { address },
+    //             { headers: { Authorization: `Bearer ${accessToken}` } }
+    //         );
+    //         if (res.data.phone) setUser((prev) => ({ ...prev, address: res.data.address }));
+
+    //         return res.data;
+    //     } catch (err) {
+    //         console.error("Failed to change address: ", err);
+    //         const msg = err.response?.data?.message || err.message || "Change address failed!";
+    //         throw new Error(msg);
+    //     }
+    // }, [api, accessToken, setUser]);
 
     const changePassword = useCallback(async (oldPassword, newPassword) => {
         try {
@@ -85,5 +119,5 @@ export default function useUserApi() {
         }
     }, [api, accessToken]);
 
-    return { getUser, changeEmail, changePhone, changeAddress, changePassword };
+    return { getUser, changeEmail, changePhone, changePassword, changeFullName, changeDateOfBirth };
 }
