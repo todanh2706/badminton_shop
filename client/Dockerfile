@@ -2,8 +2,9 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
 COPY client/package*.json ./
-RUN npm install
 COPY client ./
+
+RUN npm install
 RUN npm run build
 
 # Stage 2: Serve with Nginx
