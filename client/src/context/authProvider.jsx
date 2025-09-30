@@ -12,7 +12,7 @@ export default function AuthProvider({ children }) {
 
     // Axios instance with cookies enabled
     const api = axios.create({
-        baseURL: import.meta.env.VITE_BACKEND_BASE_URL,
+        baseURL: "https://badminton-shop-sjaa.onrender.com",
         withCredentials: true,
     });
 
