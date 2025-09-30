@@ -3,7 +3,7 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 COPY client/package*.json ./
 RUN npm install
-COPY clien ./
+COPY client ./
 RUN npm run build
 
 # Stage 2: Serve with Nginx
