@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import useUserApi from "../hooks/userApi";
 import useAuthContext from "../context/useAuthContext";
-import Sidebar from "../components/MyAccount/Sidebar";
-import ProfileTab from "../components/MyAccount/ProfileTab";
-import SecurityTab from "../components/MyAccount/SecurityTab";
-import AddressesTab from "../components/MyAccount/AddressesTab";
-import PaymentsTab from "../components/MyAccount/PaymentsTab";
-import OrdersTab from "../components/MyAccount/OrdersTab";
-import LoadingGrid from "../components/LoadingGrid";
-import PageWrapper from "../components/PageWrapper";
+import Sidebar from "../components/MyAccount/Sidebar.jsx";
+import ProfileTab from "../components/MyAccount/ProfileTab.jsx";
+import SecurityTab from "../components/MyAccount/SecurityTab.jsx";
+import AddressesTab from "../components/MyAccount/AddressesTab.jsx";
+import PaymentsTab from "../components/MyAccount/PaymentsTab.jsx";
+import OrdersTab from "../components/MyAccount/OrdersTab.jsx";
+import LoadingGrid from "../components/LoadingGrid.jsx";
+import PageWrapper from "../components/PageWrapper.jsx";
 
 export default function MyAccount() {
     const { getUser, changeEmail, changePhone, changePassword, changeFullName, changeDateOfBirth, getAddresses, addAddress, changeAddress } = useUserApi();
