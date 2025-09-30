@@ -13,7 +13,7 @@ const app = express();
 app.use(cookieParser());
 
 app.use(cors({
-    origin: "https://badminton-shop-client.onrender.com",
+    origin: "https://badminton-shop-94pi.onrender.com",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
