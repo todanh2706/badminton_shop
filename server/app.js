@@ -24,7 +24,13 @@ app.use(express.json());
 app.use(session({
     secret: process.env.SESSION_SECRET || "supersecret",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        secure: true,
+        httpOnly: true,
+        sameSite: "None",
+        maxAge: 1000 * 60 * 60 * 24,
+    }
 }));
 
 app.use(passport.initialize());
