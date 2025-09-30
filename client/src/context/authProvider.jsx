@@ -6,14 +6,17 @@ export default function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [accessToken, setAccessToken] = useState(null);
     const refreshing = useRef(false);
+    const [expiresAt, setExpiresAt] = useState(null);
     const [loading, setLoading] = useState(true);
 
+
+    // Axios instance with cookies enabled
     const api = axios.create({
         baseURL: "https://badminton-shop-sjaa.onrender.com",
         withCredentials: true,
     });
 
-    // Interceptor: auto refresh nếu gặp 401
+    // Axios response interceptor for token refresh
     api.interceptors.response.use(
         res => res,
         async (err) => {
@@ -22,25 +25,25 @@ export default function AuthProvider({ children }) {
                 return Promise.reject(err);
             }
 
-            if (err.response?.status === 401 && !originalRequest._retry) {
+            if (err.response?.status === 401 && !err.config._retry) {
                 if (refreshing.current) {
                     await new Promise(r => setTimeout(r, 500));
-                    originalRequest.headers["Authorization"] = `Bearer ${accessToken}`;
-                    return api.request(originalRequest);
+                    err.config.headers["Authorization"] = `Bearer ${accessToken}`;
+                    return api.request(err.config);
                 }
 
-                originalRequest._retry = true;
+                err.config._retry = true;
                 refreshing.current = true;
 
                 try {
                     const refreshRes = await api.get("/api/auth/refresh");
                     const newToken = refreshRes.data.accessToken;
                     setAccessToken(newToken);
-                    originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-                    return api.request(originalRequest);
+                    err.config.headers["Authorization"] = `Bearer ${newToken}`;
+                    return api.request(err.config);
                 } catch (refreshErr) {
-                    setUser(null);
                     setAccessToken(null);
+                    setUser(null);
                     return Promise.reject(refreshErr);
                 } finally {
                     refreshing.current = false;
@@ -50,25 +53,35 @@ export default function AuthProvider({ children }) {
         }
     );
 
-    // Hàm gọi refresh thủ công
     async function doRefresh() {
         if (refreshing.current) return accessToken;
         refreshing.current = true;
         try {
             const res = await api.get("/api/auth/refresh");
             const newToken = res.data.accessToken;
+            const exp = Date.now() + 15 * 60 * 1000;
             setAccessToken(newToken);
+            setExpiresAt(exp);
             return newToken;
         } finally {
             refreshing.current = false;
         }
     }
 
+    async function getValidToken() {
+        if (accessToken && expiresAt && Date.now() < expiresAt - 30_000) {
+            return accessToken;
+        }
+        return await doRefresh();
+    }
+
     useEffect(() => {
         async function initAuth() {
             try {
-                const newToken = await doRefresh(); // luôn thử refresh khi reload
-                if (!newToken) throw new Error("No access token");
+                // const hasRefreshToken = document.cookie.includes("refreshToken");
+                // if (!hasRefreshToken) return;
+
+                const newToken = await getValidToken();
                 const me = await api.get("/api/userdata/me", {
                     headers: { Authorization: `Bearer ${newToken}` },
                 });
@@ -77,18 +90,15 @@ export default function AuthProvider({ children }) {
                 console.warn("No valid session", e);
                 setUser(null);
                 setAccessToken(null);
+                setExpiresAt(null);
             } finally {
                 setLoading(false);
             }
         }
         initAuth();
-
-        // Tự refresh định kỳ mỗi 12 phút
-        const interval = setInterval(doRefresh, 12 * 60 * 1000);
-        return () => clearInterval(interval);
     }, []);
 
-    const value = { user, setUser, accessToken, api, loading };
+    const value = { user, setUser, accessToken, setAccessToken, api, loading };
 
     return (
         <AuthContext.Provider value={value}>
