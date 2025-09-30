@@ -86,22 +86,37 @@ export default function useUserApi() {
         }
     }, [api, accessToken, setUser]);
 
-    // const changeAddress = useCallback(async (address) => {
-    //     try {
-    //         const res = await api.post(
-    //             "/api/userdata/change-address",
-    //             { address },
-    //             { headers: { Authorization: `Bearer ${accessToken}` } }
-    //         );
-    //         if (res.data.phone) setUser((prev) => ({ ...prev, address: res.data.address }));
+    const changeAddress = useCallback(async (id, country, postal_code, city, street_address) => {
+        try {
+            const res = await api.post(
+                "/api/userdata/change-address",
+                { id, country, postal_code, city, street_address },
+                { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
 
-    //         return res.data;
-    //     } catch (err) {
-    //         console.error("Failed to change address: ", err);
-    //         const msg = err.response?.data?.message || err.message || "Change address failed!";
-    //         throw new Error(msg);
-    //     }
-    // }, [api, accessToken, setUser]);
+            return res.data;
+        } catch (err) {
+            console.error("Failed to change address: ", err);
+            const msg = err.response?.data?.message || err.message || "Change address failed!";
+            throw new Error(msg);
+        }
+    }, [api, accessToken]);
+
+    const addAddress = useCallback(async (country, postal_code, city, street_address) => {
+        try {
+            const res = await api.post(
+                "/api/userdata/add-address",
+                { country, postal_code, city, street_address },
+                { headers: { Authorization: `Bearer ${accessToken}` } }
+            );
+
+            return res.data;
+        } catch (err) {
+            console.error("Failed to change address: ", err);
+            const msg = err.response?.data?.message || err.message || "Change address failed!";
+            throw new Error(msg);
+        }
+    }, [api, accessToken]);
 
     const changePassword = useCallback(async (oldPassword, newPassword) => {
         try {
@@ -134,5 +149,5 @@ export default function useUserApi() {
         }
     }, [api, accessToken])
 
-    return { getUser, changeEmail, changePhone, changePassword, changeFullName, changeDateOfBirth, getAddresses };
+    return { getUser, changeEmail, changePhone, changePassword, changeFullName, changeDateOfBirth, changeAddress, getAddresses, addAddress };
 }

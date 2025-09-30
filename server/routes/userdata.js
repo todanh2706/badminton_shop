@@ -15,7 +15,7 @@ router.get("/me", authenticateToken, async (req, res) => {
         });
         if (!user) return res.status(404).json({ message: "User not found!" });
 
-        res.json({ user });
+        res.status(201).json({ message: "Fetch user's data successfully", user: user });
     } catch (err) {
         res.status(500).json({ message: "Server error", error: err.message });
     }
@@ -42,7 +42,7 @@ router.post("/change-email", authenticateToken, async (req, res) => {
         user.email = email;
         await user.save();
 
-        return res.json({ message: "Email updated successfully", email: user.email });
+        return res.status(201).json({ message: "Email updated successfully", email: user.email });
     } catch (err) {
         res.status(500).json({ message: "Server error", error: err.message });
     }
@@ -64,7 +64,7 @@ router.post("/change-phone", authenticateToken, async (req, res) => {
         user.phone = phone;
         await user.save();
 
-        return res.json({ message: "Phone number updated successfully", phone: user.phone });
+        return res.status(201).json({ message: "Phone number updated successfully", phone: user.phone });
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: "Server error", error: err.message });
@@ -87,7 +87,7 @@ router.post("/change-full_name", authenticateToken, async (req, res) => {
         user.full_name = full_name;
         await user.save();
 
-        return res.json({ message: "Full name updated successfully", full_name: user.full_name });
+        return res.status(201).json({ message: "Full name updated successfully", full_name: user.full_name });
     } catch (err) {
         res.status(500).json({ message: "Server error", error: err.message });
     }
@@ -109,32 +109,8 @@ router.post("/change-date_of_birth", authenticateToken, async (req, res) => {
         user.date_of_birth = date_of_birth;
         await user.save();
 
-        return res.json({ message: "Dtae of birth updated successfully", date_of_birth: user.date_of_birth });
+        return res.status(201).json({ message: "Date of birth updated successfully", date_of_birth: user.date_of_birth });
     } catch (err) {
-        res.status(500).json({ message: "Server error", error: err.message });
-    }
-});
-
-router.post("/change-address", authenticateToken, async (req, res) => {
-    try {
-        const user = await Users.findByPk(req.user.id, {
-            attributes: ["id", "address"]
-        });
-        if (!user) return res.status(404).json({ message: "User not found!" });
-
-        const { address } = req.body;
-
-        if (!address) {
-            return res.status(400).json({ message: "Invalid address!" });
-        }
-
-
-        user.address = address;
-        await user.save();
-
-        return res.json({ message: "Address updated successfully", address: user.address });
-    } catch (err) {
-        console.log(err);
         res.status(500).json({ message: "Server error", error: err.message });
     }
 });
@@ -163,7 +139,7 @@ router.post("/change-password", authenticateToken, async (req, res) => {
         user.password_hash = newHash;
         await user.save();
 
-        return res.json({ message: "Password updated successfully" });
+        return res.status(201).json({ message: "Password updated successfully" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error", error: err.message });
@@ -183,11 +159,64 @@ router.get("/addresses", authenticateToken, async (req, res) => {
         });
         if (!addresses) return res.json({ message: "No saved address." });
 
-        return res.json({ message: "Get user's saved addresses successfully", addresses });
+        return res.status(201).json({ message: "Get user's saved addresses successfully", addresses: addresses });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error", error: err.message });
     }
-})
+});
+
+router.post("/add-address", authenticateToken, async (req, res) => {
+    try {
+        const user = await Users.findOne({ where: { id: req.user.id } }, {
+            attributes: ["id"]
+        });
+
+        if (!user) return res.status(404).json({ message: "User not found!" });
+
+        const { country, postal_code, city, street_address } = req.body;
+
+        const newAddress = await Addresses_Users.create({
+            user_id: user.id,
+            country,
+            postal_code,
+            city,
+            street_address
+        });
+
+        return res.status(201).json({ messag: "Address added successfully", address: newAddress });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+});
+
+router.post("/change-address", authenticateToken, async (req, res) => {
+    try {
+
+        const user = await Users.findOne({ where: { id: req.user.id } }, {
+            attributes: ["id"]
+        });
+
+        if (!user) return res.status(404).json({ message: "User not found!" });
+
+        const { id, country, postal_code, city, street_address } = req.body;
+
+        const address = await Addresses_Users.findOne({
+            where: { id, user_id: user.id },
+        });
+
+        if (!address) {
+            return res.status(404).json({ message: "Address not found" });
+        }
+
+        await address.update({ country, postal_code, city, street_address });
+
+        return res.status(200).json({ message: "Address updated successfully", address });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+});
 
 export default router;

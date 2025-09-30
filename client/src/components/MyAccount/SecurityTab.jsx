@@ -3,8 +3,6 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SecurityTab({
-    showForm,
-    setShowForm,
     oldPassword,
     newPassword,
     confirmPassword,
@@ -12,6 +10,8 @@ export default function SecurityTab({
     setNewPassword,
     setConfirmPassword,
     handleChangePassword,
+    showForm,
+    setShowForm,
     loading,
     error,
 }) {
@@ -108,7 +108,7 @@ export default function SecurityTab({
             ) : (
                 <form
                     onSubmit={handleChangePassword}
-                    className="bg-white shadow rounded-lg p-6 flex flex-col gap-4 max-w-md"
+                    className="bg-white shadow rounded-lg p-6 flex flex-col gap-4 w-full"
                 >
                     <div>
                         <label className="block text-sm font-medium mb-1">Current Password</label>
