@@ -81,7 +81,9 @@ export default function AuthProvider({ children }) {
                 // const hasRefreshToken = document.cookie.includes("refreshToken");
                 // if (!hasRefreshToken) return;
 
-                const newToken = await getValidToken();
+                const res = await api.get("/api/auth/refresh"); // backend sẽ dùng cookie HttpOnly
+                const newToken = res.data.accessToken;
+                setAccessToken(newToken)
                 const me = await api.get("/api/userdata/me", {
                     headers: { Authorization: `Bearer ${newToken}` },
                 });
