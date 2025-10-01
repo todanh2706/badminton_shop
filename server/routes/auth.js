@@ -40,6 +40,7 @@ router.post("/signin", async (req, res) => {
             secure: true,
             sameSite: "none",
             path: "/",
+            maxAge: remember ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000,
         });
 
         res.json({
