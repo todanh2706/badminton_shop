@@ -12,40 +12,41 @@ export default function AuthProvider({ children }) {
 
     // Axios instance with cookies enabled
     const api = axios.create({
-        baseURL: "https://badminton-shop-sjaa.onrender.com",
+        baseURL: import.meta.env.VITE_BACKEND_BASE_URL,
         withCredentials: true,
     });
 
     // Axios response interceptor for token refresh
     api.interceptors.response.use(
-        res => res,
-        async (err) => {
-            const originalRequest = err.config;
-            if (originalRequest.url.includes("/api/auth/refresh")) {
+        res => res, // Success => just return the untouched response
+        async (err) => { // Error handler
+            const originalRequest = err.config; // Grab the original request
+            if (originalRequest.url.includes("/api/auth/refresh")) { // If failed to refresh => don't retry -> avoid infinite loop
                 return Promise.reject(err);
             }
 
-            if (err.response?.status === 401 && !err.config._retry) {
-                if (refreshing.current) {
+            if (err.response?.status === 401 && !err.config._retry) { // 401 error handler
+                if (refreshing.current) {  // If another request is already running -> wait and retry the original request with the latest accessToken
                     await new Promise(r => setTimeout(r, 500));
                     err.config.headers["Authorization"] = `Bearer ${accessToken}`;
                     return api.request(err.config);
                 }
 
-                err.config._retry = true;
+                err.config._retry = true; // retried request
                 refreshing.current = true;
 
                 try {
-                    const refreshRes = await api.get("/api/auth/refresh");
+                    const refreshRes = await api.get("/api/auth/refresh"); // Get new token
                     const newToken = refreshRes.data.accessToken;
-                    setAccessToken(newToken);
+                    setAccessToken(newToken); // Save it
+
                     err.config.headers["Authorization"] = `Bearer ${newToken}`;
-                    return api.request(err.config);
-                } catch (refreshErr) {
+                    return api.request(err.config); // Retry
+                } catch (refreshErr) { // Catch error from failed request
                     setAccessToken(null);
                     setUser(null);
                     return Promise.reject(refreshErr);
-                } finally {
+                } finally { // Clean up
                     refreshing.current = false;
                 }
             }
@@ -78,9 +79,6 @@ export default function AuthProvider({ children }) {
     useEffect(() => {
         async function initAuth() {
             try {
-                // const hasRefreshToken = document.cookie.includes("refreshToken");
-                // if (!hasRefreshToken) return;
-
                 const newToken = await getValidToken();
                 const me = await api.get("/api/userdata/me", {
                     headers: { Authorization: `Bearer ${newToken}` },

@@ -3,6 +3,7 @@ import sequelize from "./config/database.js";
 import authRoutes from "./routes/auth.js";
 import userDataRoutes from "./routes/userdata.js";
 import productDataRoutes from "./routes/productdata.js";
+import adminRoutes from "./routes/admin.js";
 import cors from "cors";
 import session from "express-session";
 import passport from "./config/passport.js";
@@ -13,7 +14,7 @@ const app = express();
 app.use(cookieParser());
 
 app.use(cors({
-    origin: "https://badminton-shop-94pi.onrender.com",
+    origin: process.env.CLIENT_BASE_URL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }));
@@ -31,9 +32,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Routes
-app.use("/api/auth", authRoutes); // Sign in, sign up
+app.use("/api/auth", authRoutes);
 app.use("/api/userdata", userDataRoutes);
 app.use("/api/productdata", productDataRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Sync database
 sequelize.sync().then(() => {

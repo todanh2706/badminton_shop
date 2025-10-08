@@ -24,13 +24,13 @@ router.post("/signin", async (req, res) => {
         }
 
         const accessToken = jwt.sign(
-            { id: user.id, email: user.email },
+            { id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: "15m" }
         );
 
         const refreshToken = jwt.sign(
-            { id: user.id, email: user.email },
+            { id: user.id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: remember ? "7d" : "1d" }
         );
@@ -49,6 +49,7 @@ router.post("/signin", async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email,
+                role: user.role,
             },
         });
     } catch (err) {
@@ -152,7 +153,7 @@ router.get("/refresh", (req, res) => {
         if (err) return res.status(403).json({ message: "Invalid refresh token" });
 
         const accessToken = jwt.sign(
-            { id: decoded.id, email: decoded.email },
+            { id: decoded.id, email: decoded.email, role: decoded.role },
             process.env.JWT_SECRET,
             { expiresIn: "15m" }
         );

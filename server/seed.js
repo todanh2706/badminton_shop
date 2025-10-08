@@ -10,12 +10,14 @@ const seedAdmin = async () => {
         const hashedPassword = await bcrypt.hash("123456", 10);
 
         const [admin, created] = await Users.findOrCreate({
-            where: { email: "thdanh23@clc.fitus.edu.vn" },
+            where: { email: "hoabuoicuoi227@gmail.com" },
             defaults: {
                 password_hash: hashedPassword,
-                email: "thdanh23@clc.fitus.edu.vn",
-                address: "227 NVC",
+                email: "hoabuoicuoi227@gmail.com",
                 phone: "0913689550",
+                full_name: "To Huu Danh",
+                date_of_birth: "2005-06-27",
+                role: "admin"
             },
         });
 

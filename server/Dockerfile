@@ -1,7 +1,18 @@
 FROM node:22-alpine
 WORKDIR /app
-COPY server/package*.json ./
+# For deployment
+# COPY server/package*.json ./ 
+
+# For docker test
+COPY package*.json ./
+
 RUN npm install
-COPY server ./
+
+# For deployment
+# COPY server ./
+
+#For docker test
+COPY . .
+
 EXPOSE 5000
 CMD ["npm", "run", "start"]

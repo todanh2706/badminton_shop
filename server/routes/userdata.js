@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import Users from "../models/Users.js";
 import { Addresses_Users } from "../models/index.js"
 import { authenticateToken } from "../middleware/auth.js";
-import { where } from "sequelize";
 
 const router = express.Router();
 
@@ -11,7 +10,7 @@ const router = express.Router();
 router.get("/me", authenticateToken, async (req, res) => {
     try {
         const user = await Users.findByPk(req.user.id, {
-            attributes: ["id", "email", "password_hash", "phone", "full_name", "date_of_birth"]
+            attributes: ["id", "email", "password_hash", "phone", "full_name", "date_of_birth", "role"]
         });
         if (!user) return res.status(404).json({ message: "User not found!" });
 

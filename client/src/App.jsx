@@ -2,6 +2,8 @@ import { Route, Routes, useLocation, Navigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import PageWrapper from "./components/PageWrapper";
 import HomeLayout from "./components/HomeLayout";
+import AdminRoute from "./components/AdminRoute";
+import AdminDashboard from "./pages/AdminDashboard";
 import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -34,11 +36,12 @@ export default function App() {
           <Route path="strings" element={<PageWrapper><Strings /></PageWrapper>} />
           <Route path="shoes" element={<PageWrapper><Shoes /></PageWrapper>} />
         </Route>
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/signin" element={<PageWrapper><SignIn /></PageWrapper>} />
         <Route path="/signup" element={<PageWrapper><SignUp /></PageWrapper>} />
         <Route path="/verify" element={<PageWrapper><VerifyOtp /></PageWrapper>} />
         <Route path="/myaccount" element={<ProtectedRoute><PageWrapper><MyAccount /></PageWrapper></ProtectedRoute>} />
       </Routes>
-    </AnimatePresence>
+    </AnimatePresence >
   );
 }

@@ -7,21 +7,6 @@ const Products = sequelize.define("Product", {
         autoIncrement: true,
         primaryKey: true,
     },
-    // password_hash: {
-    //     type: DataTypes.STRING,
-    //     allowNull: false,
-    // },
-    // email: {
-    //     type: DataTypes.STRING,
-    //     allowNull: false,
-    //     unique: true,
-    // },
-    // address: {
-    //     type: DataTypes.STRING,
-    // },
-    // phone: {
-    //     type: DataTypes.STRING,
-    // },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
