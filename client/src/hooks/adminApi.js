@@ -20,7 +20,9 @@ export default function useAdminApi() {
 
     const getProducts = useCallback(async () => {
         try {
-            const res = await api.get("/api/admin/products");
+            const res = await api.get("/api/admin/products", {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
 
             return res.data.products;
         } catch (err) {
@@ -30,5 +32,19 @@ export default function useAdminApi() {
         }
     }, [api]);
 
-    return { getUsers, getProducts };
+    const getAddresses = useCallback(async () => {
+        try {
+            const res = await api.get("/api/admin/addresses", {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+
+            return res.data.addresses;
+        } catch (err) {
+            console.error("Can not get all addresses information: ", err);
+            const msg = err.response?.data?.message || err.message || "Get addresses failed!";
+            throw new Error(msg);
+        }
+    }, [api]);
+
+    return { getUsers, getProducts, getAddresses };
 }

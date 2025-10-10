@@ -5,8 +5,10 @@ import LoadingGrid from "../components/LoadingGrid";
 export default function AdminDashboard() {
     const [showUsers, setShowUsers] = useState(false);
     const [showProducts, setShowProducts] = useState(false);
+    const [showAddresses, setShowAddresses] = useState(false);
     const [users, setUsers] = useState([]);
     const [products, setProducts] = useState([]);
+    const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const { api } = useAuthContext();
@@ -39,7 +41,21 @@ export default function AdminDashboard() {
         } finally {
             setLoading(false);
         }
+    };
 
+    const handleShowAddresses = async () => {
+        try {
+            if (!showAddresses) {
+                setLoading(true);
+                const res = await api.get("/api/admin/addresses");
+                setAddresses(res.data.addresses || []);
+            }
+            setShowAddresses(!showAddresses);
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to fetch all addresses!");
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (loading) return <LoadingGrid />
@@ -61,6 +77,13 @@ export default function AdminDashboard() {
                     className="bg-green-500 text-white p-4 rounded-lg"
                 >
                     {showProducts ? "Hide Products" : "Show All Products"}
+                </button>
+
+                <button
+                    onClick={handleShowAddresses}
+                    className="bg-yellow-500 text-white p-4 rounded-lg"
+                >
+                    {showAddresses ? "Hide Addresses" : "Show All Addresses"}
                 </button>
             </div>
 
@@ -103,6 +126,29 @@ export default function AdminDashboard() {
                                 <tr key={u.id} className="border-t">
                                     <td className="p-2 border">{u.name}</td>
                                     <td className="p-2 border">{u.price}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {/* Conditionally render the Addresses_Users Table */}
+            {showAddresses && (
+                <div className="mt-6">
+                    <h2 className="text-xl font-semibold mb-4">Addresses</h2>
+                    <table className="w-full border">
+                        <thead>
+                            <tr className="bg-gray-200">
+                                <th className="p-2 border">Street address</th>
+                                <th className="p-2 border">Country</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {addresses.map((u) => (
+                                <tr key={u.id} className="border-t">
+                                    <td className="p-2 border">{u.street_address}</td>
+                                    <td className="p-2 border">{u.country}</td>
                                 </tr>
                             ))}
                         </tbody>
